@@ -4,7 +4,7 @@
 
 # hexes-of-tenths
 
-A different way of looking at notes. The hex-of-tenths is basically formed of two hexagonals. In each hexagonal, an edge represents a whole step. Crossing among the hexes, represents a half-step.
+A different way of looking at notes. The hex-of-tenths is basically formed of two hexagonals. In each hexagonal, an edge represents a whole step. Crossing among the hexes, represents a half-step. We use _tenths_ in the title as a homage to _Circle of Fifths_.
 
 ## To-Do List
 - [ ] Use arrows instead of lines 
