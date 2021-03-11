@@ -1,11 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scales
+import chords
+
+DIMINISHED_CHORD_COLOR = '#C9C4D9'
+MAJOR_CHORD_COLOR = '#CCE7D4'
+MINOR_CHORD_COLOR = '#FCD2C2'
+ROOT_COLOR = '#5ADD80'
+SCALE_MEMBER_COLOR = '#FC8458'
+DEFAULT_COLOR = 'white'
+TEXT_DEFAULT_COLOR = 'black'
+
+def halfsteps_to_stepnames(halfsteps):
+  '''
+  Converts the halfstep counts to step names, i.e. whole step, half step etc.
+  '''
+  stepNames = []
+  for s in halfsteps:
+    if s == 1:
+      stepNames.append('H')
+    elif s == 2:
+      stepNames.append('W')
+    elif s == 3:
+      stepNames.append('WH')
+    elif s == 4:
+      stepNames.append('WW')
+    else:
+      return "" # this is probably a chord if we see >4
+  return "("+','.join(stepNames)+")"
 
 class Notes:
   def __init__(self):
     self.curIdx = 0
     self.notesABC = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    self.notes = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si']
+    self.notes = ['DO', 'DO#', 'RE', 'RE#', 'MI', 'FA', 'FA#', 'SOL', 'SOL#', 'LA', 'LA#', 'SI']
     assert(len(self.notesABC) == len(self.notes))
 
   def next(self, halfsteps):
@@ -17,24 +45,37 @@ class Notes:
     self.curIdx = (self.curIdx + halfsteps) % len(self.notesABC) 
     return tmp
 
+  def read_then_prev(self, halfsteps):
+    tmp = self.notesABC[self.curIdx] 
+    self.curIdx = (self.curIdx - halfsteps) % len(self.notesABC) 
+    return tmp
+
   def cur(self):
     return self.notesABC[self.curIdx]
   
   def set_cur(self, idx):
     self.curIdx = idx % len(self.notesABC) 
 
+def rotate(origin, point, angle_rad):
+  """
+  Rotate a point counterclockwise by a given angle around a given origin.
+  The angle should be given in radians.
+  Source: https://stackoverflow.com/questions/34372480/rotate-point-about-another-point-in-degrees-python
+  """
+  ox, oy = origin
+  px, py = point
+
+  qx = ox + np.cos(angle_rad) * (px - ox) - np.sin(angle_rad) * (py - oy)
+  qy = oy + np.sin(angle_rad) * (px - ox) + np.cos(angle_rad) * (py - oy)
+  return (qx, qy)
+
 # Calculate the center coordinates
 def centerCoordinates(m):
-  cx = 0.5; # because our first two points are always [0,0] and [b,0]
-  cy = 0.5 * np.tan(np.radians((180 - (360/m))/2)); # using the triangle of [0,0], [cx, 0]
+  cx = 0.5 # because our first two points are always [0,0] and [1,0]
+  cy = 0.5 * np.tan(np.radians((180 - (360/m))/2)) # using the triangle of [0,0], [cx, 0]
   return cx, cy
 
-#def scaleCoordinates(m)
-  # TODO: Scale the shape to a desired length edges
-
-
-# Function that returns the coordinates of the center shape (2 of them at
-# [0,0] and [1,0] for sure
+# Function that returns the coordinates of the center shape
 def initialCoordinates(m): 
   OUT = np.zeros((m+1,2))
   # [0,0] and [b,0] will be same no matter what m we give
@@ -54,20 +95,24 @@ def initialCoordinates(m):
   OUT[m, 1] = OUT[0, 1]
   return OUT
 
-def circle_of_fifths():
+def circle_of_fifths(root=None):
   '''
-  Creates the circle of fifths, and plots it
+  Creates the circle of fifths, and plots it.
+
+  You can specify a root, it will color the chords.
   '''
+  #TODO: add relative minors too
   c = initialCoordinates(12) 
   cx, cy = centerCoordinates(12)
   # Translate the coordinates so that the center is [0,0]
   c[:,0] -= cx
   c[:,1] -= cy
   cx = 0
-  cy = 0   
+  cy = 0    
 
-  # scale
-  # TODO
+  # rotate 10 degree ccw
+  for i in range(len(c)):
+    c[i, 0], c[i, 1] = rotate((cx, cy), (c[i, 0], c[i, 1]), np.radians(15))
 
   ax = plt.axes()
 
@@ -76,16 +121,58 @@ def circle_of_fifths():
 
   halfsteps_fifth = 7 # 2 + 2 + 1 + 2
   notes = Notes()
-  for x, y in c: 
-    ax.add_patch(plt.Circle((x, y), 0.25, color='black', fill=True))
-    ax.text(x, y, notes.read_then_next(halfsteps_fifth), c='white', va='center', ha='center')
+  
+  if root == None:
+    notes.set_cur(6) # start from 6th so that C is at the top
+    for x, y in c: 
+      note = notes.read_then_prev(halfsteps_fifth)
+      ax.add_patch(plt.Circle((x, y), 0.25, color='black', fill=True, zorder=5))
+      ax.text(x, y, note, c='white', va='center', ha='center', zorder=5)
+  else:
+    # go to root
+    assert(root in notes.notesABC)    
+    # TODO: make indexing by root in Notes class
+    while notes.cur() != root:
+      notes.next(1)
+    
+    # construct major scale
+    majors = []
+    dims = []
+    minors = []
+    majors.append(notes.read_then_next(2)) # I
+    minors.append(notes.read_then_next(2)) # ii
+    minors.append(notes.read_then_next(1)) # iii
+    majors.append(notes.read_then_next(2)) # IV
+    majors.append(notes.read_then_next(2)) # V
+    minors.append(notes.read_then_next(2)) # vi
+    dims.append(notes.read_then_next(1))   # vii*
+
+    notes.set_cur(6) # start from 6th so that C is at the top
+    for x, y in c: 
+      note = notes.read_then_prev(halfsteps_fifth)
+      if note == root:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=ROOT_COLOR, fill=True, zorder=5))
+      elif note in majors:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_CHORD_COLOR, fill=True, zorder=5))
+      elif note in minors:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=MINOR_CHORD_COLOR, fill=True, zorder=5))
+      elif note in dims:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=DIMINISHED_CHORD_COLOR, fill=True, zorder=5))
+      else:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+
+      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+    
+  ax.set_title('Circle of Fifths')
   plt.show()
 
-def hexes_of_tenths():
+def hexes_of_tenths(halfsteps=None, root=None):
   '''
   Creates the hexes of tenths, and plots it.
 
-  One hex starts from Do, the other from Si. Tenth is basically a whole step forward :)
+  One hex starts from C, the other from B. Tenth is basically a whole step forward.
+
+  You can specify a halfstep sequence to highlight it's notes, together with a root.
   '''
   h1 = initialCoordinates(6) 
   h2 = initialCoordinates(6) 
@@ -98,33 +185,84 @@ def hexes_of_tenths():
   hy = 0 
 
   # h1 is the outer hex, so we scale it
-  h1[:,0] *= 1.6
-  h1[:,1] *= 1.6
+  HEX_SCALE_FACTOR = 1.6
+  h1[:,0] *= HEX_SCALE_FACTOR
+  h1[:,1] *= HEX_SCALE_FACTOR
+
+  # rotate the outer h1 hex 30 degrees
+  for i in range(len(h1)):
+    h1[i, 0], h1[i, 1] = rotate((hx, hy), (h1[i, 0], h1[i, 1]), np.radians(30))
 
   ax = plt.axes()
   ax.plot(h1[:,0], h1[:,1], 'k')
   ax.plot(h2[:,0], h2[:,1], 'k')
 
-  notes = Notes() 
-
-  # outer hex
-  notes.set_cur(0)
-  for x, y in h1: 
-    ax.add_patch(plt.Circle((x, y), 0.25, color='black', fill=True))
-    ax.text(x, y, notes.read_then_next(2), c='white', va='center', ha='center')
-
-  # inner hex
-  notes.set_cur(-1)
-  for x, y in h2: 
-    ax.add_patch(plt.Circle((x, y), 0.25, color='black', fill=True))
-    ax.text(x, y, notes.read_then_next(2), c='white', va='center', ha='center')
-
-  # inner to outer lines (on same index)
-  # TODO
+  # inner to outer lines (on same index) 
+  for i in range(6): 
+    ax.add_line(plt.Line2D([h1[i,0], h2[i, 0]], [h1[i, 1], h2[i, 1]], color='black', linestyle="--"))
 
   # outer to inner lines (outer to next inner)
-  # TODO 
+  for i in range(5):
+    ax.add_line(plt.Line2D([h1[i,0], h2[i+1, 0]], [h1[i, 1], h2[i+1, 1]], color='black', linestyle="--"))
+  ax.add_line(plt.Line2D([h1[5, 0], h2[0, 0]], [h1[5, 1], h2[0, 1]], color='black', linestyle="--"))
 
+  notes = Notes() 
+  if halfsteps == None or root == None:
+    # outer hex
+    notes.set_cur(6)
+    for x, y in h1: 
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5))
+      ax.text(x, y, notes.read_then_next(2), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+
+    # inner hex
+    notes.set_cur(5)
+    for x, y in h2: 
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5))
+      ax.text(x, y, notes.read_then_next(2), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+    
+    ax.set_title('Hexes of Tenths')
+  else:
+    assert(root in notes.notesABC)
+    # TODO: make indexing by root in Notes class
+    while notes.cur() != root:
+      notes.next(1)
+
+    # construct the scale
+    scaleNotes = []
+    for steps in halfsteps:
+      scaleNotes.append(notes.read_then_next(steps))
+    scaleNotes.append(notes.cur())
+
+    # outer hex
+    notes.set_cur(6)
+    for x, y in h1: 
+      note = notes.read_then_next(2)
+      if note == root:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=ROOT_COLOR, fill=True, zorder=5))
+      elif note in scaleNotes:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
+      else:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+
+    # inner hex
+    notes.set_cur(5)
+    for x, y in h2: 
+      note = notes.read_then_next(2)
+      if note == root:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=ROOT_COLOR, fill=True, zorder=5))
+      elif note in scaleNotes:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
+      else:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+
+    ax.set_title('Hexes of Tenths '+halfsteps_to_stepnames(halfsteps))
+
+  plt.xlim([-2, 2])
+  plt.ylim([-2, 2])
   plt.show()
 
-hexes_of_tenths()
+if __name__ == "__main__":
+  hexes_of_tenths(root='C', halfsteps=chords.Maj7s11)
+  #circle_of_fifths(root='E')
