@@ -1,7 +1,9 @@
 <p align="center">
   <img src="/img/hex.png" width="540">
 </p>
+
 # hexes-of-tenths
+
 A different way of looking at notes. The hex-of-tenths is basically formed of two hexagonals. In each hexagonal, an edge represents a whole step. Crossing among the hexes, represents a half-step.
 
 ## To-Do List
