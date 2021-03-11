@@ -1,11 +1,25 @@
+<p align="center">
+  <img src="/img/hex.png" width="540">
+</p>
 # hexes-of-tenths
 A different way of looking at notes. The hex-of-tenths is basically formed of two hexagonals. In each hexagonal, an edge represents a whole step. Crossing among the hexes, represents a half-step.
 
-We represent scales and chords as sequences of half-steps (e.g. [2, 2, 1, 2, 2, 2, 1] is major scale).
+## To-Do List
+- [ ] Use arrows instead of lines 
+- [ ] Add relative minors to circle
+- [ ] Chords and scale creation functions
+- [ ] Interactive web application
 
-## TODO
-- [ ] Add arrows instead of lines 
-- [ ] add relative minors to circle
 
-## Future Work
-I would really appreciate if someone could help make this an interactive web application!
+## Examples
+An example for C Major scale.
+![CMajor](https://github.com/erhant/hexes-of-tenths/blob/master/img/CMajor.png?raw=true)
+
+Another example for C Major 7th chord.
+![CMaj7](https://github.com/erhant/hexes-of-tenths/blob/master/img/Cmaj7.png?raw=true)
+
+We also have Circle of Fifths here.
+![Circle](https://github.com/erhant/hexes-of-tenths/blob/master/img/circle.png?raw=true)
+
+It can highlight chords in a key.
+![CircleC](https://github.com/erhant/hexes-of-tenths/blob/master/img/circleC.png?raw=true)

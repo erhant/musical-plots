@@ -126,8 +126,8 @@ def circle_of_fifths(root=None):
     notes.set_cur(6) # start from 6th so that C is at the top
     for x, y in c: 
       note = notes.read_then_prev(halfsteps_fifth)
-      ax.add_patch(plt.Circle((x, y), 0.25, color='black', fill=True, zorder=5))
-      ax.text(x, y, note, c='white', va='center', ha='center', zorder=5)
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
   else:
     # go to root
     assert(root in notes.notesABC)    
@@ -211,13 +211,13 @@ def hexes_of_tenths(halfsteps=None, root=None):
     # outer hex
     notes.set_cur(6)
     for x, y in h1: 
-      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5))
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
       ax.text(x, y, notes.read_then_next(2), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
 
     # inner hex
     notes.set_cur(5)
     for x, y in h2: 
-      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5))
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
       ax.text(x, y, notes.read_then_next(2), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
     
     ax.set_title('Hexes of Tenths')
@@ -264,5 +264,5 @@ def hexes_of_tenths(halfsteps=None, root=None):
   plt.show()
 
 if __name__ == "__main__":
-  hexes_of_tenths(root='C', halfsteps=chords.Maj7s11)
-  #circle_of_fifths(root='E')
+  hexes_of_tenths()
+  circle_of_fifths()
