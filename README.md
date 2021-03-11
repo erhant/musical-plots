@@ -13,13 +13,13 @@ A different way of looking at notes. The hex-of-tenths is basically formed of tw
 
 ## Examples
 An example for C Major scale.
-![CMajor](https://github.com/erhant/hexes-of-tenths/blob/master/img/CMajor.png?raw=true)
+![CMajor](https://github.com/erhant/hexes-of-tenths/blob/main/img/CMajor.png?raw=true)
 
 Another example for C Major 7th chord.
-![CMaj7](https://github.com/erhant/hexes-of-tenths/blob/master/img/Cmaj7.png?raw=true)
+![CMaj7](https://github.com/erhant/hexes-of-tenths/blob/main/img/Cmaj7.png?raw=true)
 
 We also have Circle of Fifths here.
-![Circle](https://github.com/erhant/hexes-of-tenths/blob/master/img/circle.png?raw=true)
+![Circle](https://github.com/erhant/hexes-of-tenths/blob/main/img/circle.png?raw=true)
 
 It can highlight chords in a key.
-![CircleC](https://github.com/erhant/hexes-of-tenths/blob/master/img/circleC.png?raw=true)
+![CircleC](https://github.com/erhant/hexes-of-tenths/blob/main/img/circleC.png?raw=true)
