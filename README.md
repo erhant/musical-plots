@@ -1,13 +1,13 @@
 # Musical Plots
 
 This repo uses `matplotlib` to plot some cool things:
-- Circle of Fifths
+- **Circle of Fifths**:
   Can specify a root to highlight it's major key and the relative minor key.
-- Hexes of Tenths (a structure made up by me)
+- **Hexes of Tenths** (a structure made up by me):
   Can specify a root and an array of intervals which make up a chord or a scale.
-- Fretboard
+- **Fretboard**:
   Can specify a root and an array of intervals which make up a chord or a scale. Can also specify fret count and string tuning.
-- Keyboard
+- **Keyboard**:
   Can specify a root and an array of intervals which make up a chord or a scale. Can also specify number of octaves to display.
 
 Note: Some chords are wrong at the moment. Proceed with caution.
