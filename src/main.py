@@ -1,107 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from util import initialCoordinates, centerCoordinates, rotate
 import scales
 import chords
+import notes
+from copy import deepcopy
 
 DIMINISHED_CHORD_COLOR = '#C9C4D9'
 MAJOR_CHORD_COLOR = '#CCE7D4'
 MINOR_CHORD_COLOR = '#FCD2C2'
-ROOT_COLOR = '#5ADD80'
-SCALE_MEMBER_COLOR = '#FC8458'
+MAJOR_ROOT_COLOR = '#5ADD80'
+MINOR_ROOT_COLOR = '#FF9A75'
+SCALE_MEMBER_COLOR = '#C9C4D9'
 DEFAULT_COLOR = 'white'
 TEXT_DEFAULT_COLOR = 'black'
 
-def halfsteps_to_stepnames(halfsteps):
-  '''
-  Converts the halfstep counts to step names, i.e. whole step, half step etc.
-  '''
-  stepNames = []
-  for s in halfsteps:
-    if s == 1:
-      stepNames.append('H')
-    elif s == 2:
-      stepNames.append('W')
-    elif s == 3:
-      stepNames.append('WH')
-    elif s == 4:
-      stepNames.append('WW')
-    else:
-      return "" # this is probably a chord if we see >4
-  return "("+','.join(stepNames)+")"
-
-class Notes:
-  def __init__(self):
-    self.curIdx = 0
-    self.notesABC = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    self.notes = ['DO', 'DO#', 'RE', 'RE#', 'MI', 'FA', 'FA#', 'SOL', 'SOL#', 'LA', 'LA#', 'SI']
-    assert(len(self.notesABC) == len(self.notes))
-
-  def next(self, halfsteps):
-    self.curIdx = (self.curIdx + halfsteps) % len(self.notesABC) 
-    return self.notesABC[self.curIdx]
-
-  def read_then_next(self, halfsteps):
-    tmp = self.notesABC[self.curIdx] 
-    self.curIdx = (self.curIdx + halfsteps) % len(self.notesABC) 
-    return tmp
-
-  def read_then_prev(self, halfsteps):
-    tmp = self.notesABC[self.curIdx] 
-    self.curIdx = (self.curIdx - halfsteps) % len(self.notesABC) 
-    return tmp
-
-  def cur(self):
-    return self.notesABC[self.curIdx]
-  
-  def set_cur(self, idx):
-    self.curIdx = idx % len(self.notesABC) 
-
-def rotate(origin, point, angle_rad):
-  """
-  Rotate a point counterclockwise by a given angle around a given origin.
-  The angle should be given in radians.
-  Source: https://stackoverflow.com/questions/34372480/rotate-point-about-another-point-in-degrees-python
-  """
-  ox, oy = origin
-  px, py = point
-
-  qx = ox + np.cos(angle_rad) * (px - ox) - np.sin(angle_rad) * (py - oy)
-  qy = oy + np.sin(angle_rad) * (px - ox) + np.cos(angle_rad) * (py - oy)
-  return (qx, qy)
-
-# Calculate the center coordinates
-def centerCoordinates(m):
-  cx = 0.5 # because our first two points are always [0,0] and [1,0]
-  cy = 0.5 * np.tan(np.radians((180 - (360/m))/2)) # using the triangle of [0,0], [cx, 0]
-  return cx, cy
-
-# Function that returns the coordinates of the center shape
-def initialCoordinates(m): 
-  OUT = np.zeros((m+1,2))
-  # [0,0] and [b,0] will be same no matter what m we give
-  OUT[0,0] = 0
-  OUT[0,1] = 0
-  OUT[1,0] = 1
-  OUT[1,1] = 0 
-  
-  outerAngleRad = np.radians(360/m) # Default: Angle of a regular polygon
-  curOuterAngleRad = outerAngleRad
-  for i in range(2, m):
-    OUT[i,0] = OUT[i-1,0] + np.cos(curOuterAngleRad)
-    OUT[i,1] = OUT[i-1,1] + np.sin(curOuterAngleRad)
-    curOuterAngleRad += outerAngleRad
-  
-  OUT[m, 0] = OUT[0, 0]
-  OUT[m, 1] = OUT[0, 1]
-  return OUT
+_notes = notes.Notes()
 
 def circle_of_fifths(root=None):
   '''
-  Creates the circle of fifths, and plots it.
+  Creates the circle of fifths, and plots it. It includes relative minors.
 
-  You can specify a root, it will color the chords.
-  '''
-  #TODO: add relative minors too
+  You can specify a root, it will color the chords in major and relative minor scale.
+  ''' 
   c = initialCoordinates(12) 
   cx, cy = centerCoordinates(12)
   # Translate the coordinates so that the center is [0,0]
@@ -114,56 +35,88 @@ def circle_of_fifths(root=None):
   for i in range(len(c)):
     c[i, 0], c[i, 1] = rotate((cx, cy), (c[i, 0], c[i, 1]), np.radians(15))
 
+  # copy to another
+  c_rel = deepcopy(c) # relative minors
+  CIRCLE_SCALE_FACTOR = 0.75
+  c_rel[:,0] *= CIRCLE_SCALE_FACTOR
+  c_rel[:,1] *= CIRCLE_SCALE_FACTOR
+
+
   ax = plt.axes()
 
   # Plot the lines, add circles and text
   ax.plot(c[:,0], c[:,1], 'k')
+  ax.plot(c_rel[:,0], c_rel[:,1], 'k--')
 
-  halfsteps_fifth = 7 # 2 + 2 + 1 + 2
-  notes = Notes()
+  halfsteps_fifth = 7 # 2 + 2 + 1 + 2 
+
   
-  if root == None:
-    notes.set_cur(6) # start from 6th so that C is at the top
-    for x, y in c: 
-      note = notes.read_then_prev(halfsteps_fifth)
-      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
-      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
-  else:
-    # go to root
-    assert(root in notes.notesABC)    
-    # TODO: make indexing by root in Notes class
-    while notes.cur() != root:
-      notes.next(1)
-    
+  # outer  
+  majors = []
+  dims = []
+  minors = []
+  if root != None:
+    # go to root 
+    _notes.set_cur(root)
+    rootName = _notes.cur()
     # construct major scale
-    majors = []
-    dims = []
-    minors = []
-    majors.append(notes.read_then_next(2)) # I
-    minors.append(notes.read_then_next(2)) # ii
-    minors.append(notes.read_then_next(1)) # iii
-    majors.append(notes.read_then_next(2)) # IV
-    majors.append(notes.read_then_next(2)) # V
-    minors.append(notes.read_then_next(2)) # vi
-    dims.append(notes.read_then_next(1))   # vii*
+    majors.append(_notes.read_then_next(2)) # I
+    minors.append(_notes.read_then_next(2)) # ii
+    minors.append(_notes.read_then_next(1)) # iii
+    majors.append(_notes.read_then_next(2)) # IV
+    majors.append(_notes.read_then_next(2)) # V
+    minors.append(_notes.read_then_next(2)) # vi
+    dims.append(_notes.read_then_next(1))   # VII*
 
-    notes.set_cur(6) # start from 6th so that C is at the top
-    for x, y in c: 
-      note = notes.read_then_prev(halfsteps_fifth)
-      if note == root:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=ROOT_COLOR, fill=True, zorder=5))
-      elif note in majors:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_CHORD_COLOR, fill=True, zorder=5))
-      elif note in minors:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=MINOR_CHORD_COLOR, fill=True, zorder=5))
-      elif note in dims:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=DIMINISHED_CHORD_COLOR, fill=True, zorder=5))
-      else:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+  _notes.set_cur(notes.Fs) 
+  for x, y in c: 
+    note = _notes.read_then_next(-halfsteps_fifth)
+    if note == rootName:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_ROOT_COLOR, fill=True, zorder=5))
+    elif note in majors:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_CHORD_COLOR, fill=True, zorder=5))
+    elif note in minors:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=MINOR_CHORD_COLOR, fill=True, zorder=5))
+    elif note in dims:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DIMINISHED_CHORD_COLOR, fill=True, zorder=5))
+    else:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+    ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+  
+  # inner  
+  majors = []
+  dims = []
+  minors = []
+  if root != None: 
+    _notes.set_cur(root)
+    _notes.next(-3) # move to relative minor
+    rootName = _notes.cur()
+    # construct minor scale
+    minors.append(_notes.read_then_next(2)) # i
+    dims.append(_notes.read_then_next(1)) # II*
+    majors.append(_notes.read_then_next(2)) # III
+    minors.append(_notes.read_then_next(2)) # iv
+    minors.append(_notes.read_then_next(1)) # v
+    majors.append(_notes.read_then_next(2)) # VI
+    majors.append(_notes.read_then_next(2))   # VII
 
-      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
-    
+  _notes.set_cur(notes.Eb) 
+  for x, y in c_rel: 
+    note = _notes.read_then_next(-halfsteps_fifth)
+    if note == rootName:
+      ax.add_patch(plt.Circle((x, y), 0.18, color=MINOR_ROOT_COLOR, fill=True, zorder=5))
+    elif note in majors:
+      ax.add_patch(plt.Circle((x, y), 0.18, color=MAJOR_CHORD_COLOR, fill=True, zorder=5))
+    elif note in minors:
+      ax.add_patch(plt.Circle((x, y), 0.18, color=MINOR_CHORD_COLOR, fill=True, zorder=5))
+    elif note in dims:
+      ax.add_patch(plt.Circle((x, y), 0.18, color=DIMINISHED_CHORD_COLOR, fill=True, zorder=5))
+    else:
+      ax.add_patch(plt.Circle((x, y), 0.18, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+    ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+
   ax.set_title('Circle of Fifths')
+  plt.axis('off')
   plt.show()
 
 def hexes_of_tenths(halfsteps=None, root=None):
@@ -205,64 +158,182 @@ def hexes_of_tenths(halfsteps=None, root=None):
   for i in range(5):
     ax.add_line(plt.Line2D([h1[i,0], h2[i+1, 0]], [h1[i, 1], h2[i+1, 1]], color='black', linestyle="--"))
   ax.add_line(plt.Line2D([h1[5, 0], h2[0, 0]], [h1[5, 1], h2[0, 1]], color='black', linestyle="--"))
-
-  notes = Notes() 
-  if halfsteps == None or root == None:
-    # outer hex
-    notes.set_cur(6)
-    for x, y in h1: 
-      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
-      ax.text(x, y, notes.read_then_next(2), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
-
-    # inner hex
-    notes.set_cur(5)
-    for x, y in h2: 
-      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
-      ax.text(x, y, notes.read_then_next(2), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+ 
+   
     
-    ax.set_title('Hexes of Tenths')
-  else:
-    assert(root in notes.notesABC)
-    # TODO: make indexing by root in Notes class
-    while notes.cur() != root:
-      notes.next(1)
+  # construct the scale
+  scaleNotes = []
+  rootName = ""
 
-    # construct the scale
-    scaleNotes = []
+  if halfsteps != None and root != None:
+    _notes.set_cur(root)
+    rootName = _notes.cur()
     for steps in halfsteps:
-      scaleNotes.append(notes.read_then_next(steps))
-    scaleNotes.append(notes.cur())
+      scaleNotes.append(_notes.read_then_next(steps))
+    scaleNotes.append(_notes.cur())
 
-    # outer hex
-    notes.set_cur(6)
-    for x, y in h1: 
-      note = notes.read_then_next(2)
-      if note == root:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=ROOT_COLOR, fill=True, zorder=5))
-      elif note in scaleNotes:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
-      else:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
-      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+  # outer hex
+  _notes.set_cur(notes.Fs)
+  for x, y in h1: 
+    note = _notes.read_then_next(2)
+    if note == rootName:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_ROOT_COLOR, fill=True, zorder=5))
+    elif note in scaleNotes:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
+    else:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+    ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
 
-    # inner hex
-    notes.set_cur(5)
-    for x, y in h2: 
-      note = notes.read_then_next(2)
-      if note == root:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=ROOT_COLOR, fill=True, zorder=5))
-      elif note in scaleNotes:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
-      else:
-        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
-      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
+  # inner hex
+  _notes.set_cur(notes.F)
+  for x, y in h2: 
+    note = _notes.read_then_next(2)
+    if note == rootName:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_ROOT_COLOR, fill=True, zorder=5))
+    elif note in scaleNotes:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
+    else:
+      ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+    ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5)
 
-    ax.set_title('Hexes of Tenths '+halfsteps_to_stepnames(halfsteps))
+  ax.set_title('Hexes of Tenths')
 
   plt.xlim([-2, 2])
   plt.ylim([-2, 2])
+  plt.axis('off')
   plt.show()
 
+def fretboard(fretcount=12, strings=[notes.E, notes.A, notes.D, notes.G, notes.B, notes.E], root=None, halfsteps=None):
+  '''
+  The fretboard is constructed in matplotlib.
+
+  You can pass in root and halfsteps for highlighting.
+  '''
+  stringcount = len(strings)
+  assert(stringcount > 0)
+  f = np.empty((fretcount+2, 2 , stringcount)) # fretboard coordinates
+  # A fret is of size (F_X, F_Y) 
+  F_X = 1
+  F_Y = 1
+  START_X = 0.0
+  START_Y = 0.0
+  for i in range(fretcount+2):
+    f[i, 0, 0] = START_X + i * F_X
+    f[i, 1, 0] = START_Y
+    for j in range(1,stringcount):
+      f[i, 0, j] = f[i, 0, 0] # X is same for every string
+      f[i, 1, j] = f[i, 1, 0] + j * F_Y
+  
+  ax = plt.axes()
+
+  # plot verticals
+  for i in range(1,fretcount+2):
+    ax.plot(f[i,0,:], f[i,1,:], 'k')
+  # plot horizontals
+  for j in range(stringcount):
+    ax.plot(f[1:,0,j], f[1:,1,j], 'k') 
+
+  scaleNotes = []
+  rootName = ""
+  if halfsteps != None and root != None:
+    _notes.set_cur(root)
+    rootName = _notes.cur()
+    for steps in halfsteps:
+      scaleNotes.append(_notes.read_then_next(steps))
+    scaleNotes.append(_notes.cur())
+
+  # Create circles
+  for j in range(stringcount):
+    _notes.set_cur(strings[j])
+    for i in range(fretcount+1):
+      note = _notes.read_then_next(1)
+      x = (f[i, 0, j] + f[i+1, 0, j]) / 2
+      y = (f[i, 1, j] + f[i+1, 1, j]) / 2
+      if note == rootName:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=MAJOR_ROOT_COLOR, fill=True, zorder=5))
+      elif note in scaleNotes:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=SCALE_MEMBER_COLOR, fill=True, zorder=5))
+      else:
+        ax.add_patch(plt.Circle((x, y), 0.25, color=DEFAULT_COLOR, fill=True, zorder=5, ec='black'))
+      ax.text(x, y, note, c=TEXT_DEFAULT_COLOR, va='center', ha='center', fontsize='medium', zorder=5)
+
+  for i in range(fretcount+1):
+    ax.text((f[i, 0, 0] + f[i+1, 0, 0]) / 2, START_Y - 0.5 * F_Y, str(i), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5) 
+  ax.set_title("Fretboard")
+  plt.xlim([START_X-F_X, F_X*(fretcount+2)]) # one +1 for the open fret, other +1 for the boundary
+  plt.ylim([START_Y-F_Y, F_Y*(stringcount)])
+  plt.axis('off')
+  plt.show()
+
+def piano(octaves=2, root=None, halfsteps=None):
+  '''
+  Piano keys. Each octave starts with C.
+  
+  '''
+  START_X = 0.0
+  START_Y = 0.0
+  SCALE_X=1.3
+  SCALE_Y=1.8
+  W_X = 2.35*SCALE_X
+  W_Y = W_X*SCALE_Y
+  B_X = 1.37*SCALE_X
+  B_Y = B_X*SCALE_Y
+  ax = plt.axes()
+
+  _notes.set_cur(notes.C)
+  CUR_X = START_X
+  
+  scaleNotes = []
+  rootName = ""
+  if halfsteps != None and root != None:
+    _notes.set_cur(root)
+    rootName = _notes.cur()
+    for steps in halfsteps:
+      scaleNotes.append(_notes.read_then_next(steps))
+    scaleNotes.append(_notes.cur())
+
+  _notes.set_cur(notes.C)
+  for o in range(octaves):
+    for i in range(7):
+      note = _notes.read_then_next(1) 
+      # white key
+      if note == rootName:
+        ax.add_patch(plt.Rectangle((CUR_X, START_Y), W_X, -W_Y, color=MAJOR_ROOT_COLOR, fill=True, zorder=5, ec='black')) 
+        ax.text(CUR_X+W_X/2, START_Y-3*W_Y/4, note, c='white', va='center', ha='center', zorder=5)
+      elif note in scaleNotes:
+        ax.add_patch(plt.Rectangle((CUR_X, START_Y), W_X, -W_Y, color=SCALE_MEMBER_COLOR, fill=True, zorder=5, ec='black')) 
+        ax.text(CUR_X+W_X/2, START_Y-3*W_Y/4, note, c='white', va='center', ha='center', zorder=5)
+      else:
+        ax.add_patch(plt.Rectangle((CUR_X, START_Y), W_X, -W_Y, color='white', fill=True, zorder=5, ec='black')) 
+        ax.text(CUR_X+W_X/2, START_Y-3*W_Y/4, note, c='black', va='center', ha='center', zorder=5)
+      
+      # black key
+      if i != 2 and i != 6:
+        note = _notes.read_then_next(1) 
+        if note == rootName:
+          ax.add_patch(plt.Rectangle((CUR_X+W_X-(B_X/2), START_Y), B_X, -B_Y, color=MAJOR_ROOT_COLOR, fill=True, zorder=6, ec='black')) 
+        elif note in scaleNotes:
+          ax.add_patch(plt.Rectangle((CUR_X+W_X-(B_X/2), START_Y), B_X, -B_Y, color=SCALE_MEMBER_COLOR, fill=True, zorder=6, ec='black')) 
+        else:
+          ax.add_patch(plt.Rectangle((CUR_X+W_X-(B_X/2), START_Y), B_X, -B_Y, color='black', fill=True, zorder=6, ec='black'))
+        ax.text(CUR_X+W_X, START_Y-3*B_Y/4, note, c='white', va='center', ha='center', zorder=6)
+    
+      CUR_X += W_X
+  
+
+  ax.set_title("Piano")
+  plt.xlim([START_X-W_X, CUR_X+W_X]) # one +1 for the open fret, other +1 for the boundary
+  plt.ylim([START_Y-W_Y, START_Y])
+  plt.tight_layout()
+  plt.axis('off')
+  plt.show()
+
+  # KW_X KW_Y are white key dims, KB_X KB_Y are black key dims.
 if __name__ == "__main__":
-  hexes_of_tenths()
-  circle_of_fifths()
+  #hexes_of_tenths(root=notes.Gs, halfsteps=scales.Minor)
+  #circle_of_fifths(root=notes.C)
+  #fretboard(root=notes.G, halfsteps=scales.Minor_Pentatonic)
+  #fretboard(root=notes.E, halfsteps=chords.Hendrix)
+  #piano(root=notes.Ab, halfsteps=scales.Major)
+  #piano(root=notes.C, halfsteps=scales.Blues)
+  pass

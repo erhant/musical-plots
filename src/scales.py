@@ -20,6 +20,7 @@ Pentatonic_Pelog = [1, 2, 4, 3]
 Hemitonic_Pentatonic_3 = [2, 1, 4, 4]
 Pentatonic_Variation = [4, 3, 2, 1]
 
+Blues = [3, 2, 1, 1, 3]
 Esoteric_6 = [3, 4, 2, 3]
 Enigmatic = [1, 3, 2, 2, 2, 1, 1]
 Byzantine_Gypsy = [1, 3, 1, 2, 1, 3, 1] 
@@ -29,6 +30,11 @@ Spanish = [1, 2, 1, 1, 1, 2, 2, 2]
 Hungarian_Gypsy = [2, 1, 3, 1, 1, 2, 2]
 Native_American = [2, 2, 2, 3, 2, 1]
 Major_Bebop = [2, 2, 1, 2, 1, 1, 2, 1]
-
-# Major Modes # TODO (allow duplicates)
-
+ 
+Major_Ionian = [2, 2, 1, 2, 2, 2, 1]
+Major_Dorian = [2, 1, 2, 2, 2, 1, 2]
+Major_Phrygian = [1, 2, 2, 2, 1, 2, 2]
+Major_Lydian = [2, 2, 2, 1, 2, 2, 1]
+Major_Mixolydian = [2, 2, 1, 2, 2, 1, 2]
+Major_Aeolian = [2, 1, 2, 2, 1, 2, 2] # le mineur boi
+Major_Locrian = [1, 2, 2, 1, 2, 2, 2] 

@@ -49,8 +49,7 @@ Min11     = [3, 4, 3, 7]
 
 Dom7b5    = [4, 2, 4]
 Dom7      = [4, 3, 3]
-Dom9      = [4, 3, 3, 4] # aka 9
-Dom7s9    = [4, 3, 3, 5]
+Dom9      = [4, 3, 3, 4] # aka 9 
 
 Dim       = [3, 3]
 Dim7      = [3, 3, 3]
@@ -70,7 +69,7 @@ Dom13 = [4, 3, 3, 11] # aka 13
  
 
 # Specials
-Hendrix = Dom7s9 # 7#9 (root E)
+Hendrix = [4, 6, 5] # must be root E
 
 
 
