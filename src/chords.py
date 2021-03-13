@@ -24,6 +24,7 @@ Major Interval Distances:
   This matrix is useful for chord construction, for example major chord is 1-3-5. So we look at mat[1][3] and mat[3][5], giving 4 and 3. 
 
 #TODO: implement chord constructor function, e.g. (construct(['1', 'b3', '5', '#7']))
+#TODO: chords are wrong
 '''
 
 Power     = [7]

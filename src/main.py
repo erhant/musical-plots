@@ -274,6 +274,7 @@ def piano(octaves=2, root=None, halfsteps=None):
   START_Y = 0.0
   SCALE_X=1.3
   SCALE_Y=1.8
+  # W_X W_Y are white key dims, B_X B_Y are black key dims.
   W_X = 2.35*SCALE_X
   W_Y = W_X*SCALE_Y
   B_X = 1.37*SCALE_X
@@ -328,7 +329,7 @@ def piano(octaves=2, root=None, halfsteps=None):
   plt.axis('off')
   plt.show()
 
-  # KW_X KW_Y are white key dims, KB_X KB_Y are black key dims.
+  
 if __name__ == "__main__":
   #hexes_of_tenths(root=notes.Gs, halfsteps=scales.Minor)
   #circle_of_fifths(root=notes.C)
