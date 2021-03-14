@@ -34,7 +34,7 @@ Piano, [A Flat Major](https://open.spotify.com/track/0SwKt4T6PMsdqU5q6Pv234?si=j
 
 ![5](https://github.com/erhant/hexes-of-tenths/blob/main/img/piano_aflat_major.png?raw=true)
 
-Piano, [C Blues](https://open.spotify.com/track/0SwKt4T6PMsdqU5q6Pv234?si=jqlPWngxT4SdIImAWIBdmw)
+Piano, [C Blues](https://open.spotify.com/track/4CZfPaDW5madfScpZl0nDU?si=Edc98YizR_OiWNsJANWL6Q)
 
 ![6](https://github.com/erhant/hexes-of-tenths/blob/main/img/piano_c_blues.png?raw=true)
 
