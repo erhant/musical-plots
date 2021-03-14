@@ -97,7 +97,7 @@ MinMaj7   = to_interval('1-b3-5-7')
 Dom7      = to_interval('1-3-5-b7')
 Dom7s5    = to_interval('1-3-5#-b7')
 Dom7s9    = to_interval('1-3-5-b7-9#')
-Dom7s11    = to_interval('1-3-5-b7-11#')
+Dom7s11   = to_interval('1-3-5-b7-11#')
 Dom9      = to_interval('1-3-5-b7-9')
 Dom11     = to_interval('1-3-5-b7-9-11')
 Dom13     = to_interval('1-3-5-b7-9-11-13')
@@ -106,12 +106,8 @@ Dim       = to_interval('1-b3-b5')
 Dim7      = to_interval('1-b3-b5-bb7')
 HalfDim   = to_interval('1-b3-b5-b7')
 Min7b5    = HalfDim
-   
- 
- 
-
-# Specials
-Hendrix = Dom7s9 # must be root E
+     
+Hendrix = Dom7s9 # must be root E though :)
 
 
 
