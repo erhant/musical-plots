@@ -10,7 +10,7 @@ This repo uses `matplotlib` to plot some cool things:
 - **Keyboard**:
   Can specify a root and an array of intervals which make up a chord or a scale. Can also specify number of octaves to display.
 
-Note: Some chords are wrong at the moment. Proceed with caution.
+There is also a chord constructor in `chords.py`. You can give it an input such as `"1-b3-5-b7"` and it will create the necessary array of intervals, which is used by the actual plots.
 
 ## Examples
 Hexes of Tenths, [G# Minor](https://open.spotify.com/track/6GzMz3s0K1YKwRVI36CgRx?si=a5-Jz81pRbuIVQsfP2h2RQ) scale.
@@ -38,8 +38,3 @@ Piano, [C Blues](https://open.spotify.com/track/4CZfPaDW5madfScpZl0nDU?si=Edc98Y
 
 ![6](https://github.com/erhant/hexes-of-tenths/blob/main/img/piano_c_blues.png?raw=true)
 
-## To-Do List
-- [ ] Use arrows instead of lines 
-- [ ] Chords may be wrong
-- [ ] Chords and scale creation functions
-- [ ] Interactive web application

@@ -334,7 +334,7 @@ if __name__ == "__main__":
   #hexes_of_tenths(root=notes.Gs, halfsteps=scales.Minor)
   #circle_of_fifths(root=notes.C)
   #fretboard(root=notes.G, halfsteps=scales.Minor_Pentatonic)
-  #fretboard(root=notes.E, halfsteps=chords.Hendrix)
+  fretboard(root=notes.E, halfsteps=chords.Hendrix)
   #piano(root=notes.Ab, halfsteps=scales.Major)
   #piano(root=notes.C, halfsteps=scales.Blues)
   pass
