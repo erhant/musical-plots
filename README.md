@@ -19,10 +19,9 @@ Hexes of Tenths, [G# Minor](https://open.spotify.com/track/6GzMz3s0K1YKwRVI36CgR
 
 Circle of Fifths, [C Major](https://open.spotify.com/track/5rkBnTgLJa6xBuBSZTbuCT?si=Vf7whUFEQLmZLXESsh84QQ) key (with relative [A Minor](https://open.spotify.com/track/0NcSIGbvjOxxbdKCGhKfF3?si=AFJPoOQzT8iGZDeMR7nkMA) key).
 
+![2](https://github.com/erhant/hexes-of-tenths/blob/main/img/circle_c.png?raw=true)
 
 ### Guitar (6-string, standard)
-
-![2](https://github.com/erhant/hexes-of-tenths/blob/main/img/circle_c.png?raw=true)
 
 Fretboard, [G Minor Pentatonic](https://open.spotify.com/track/3af6czaWDVsWKdMNtVykhX?si=ladZE-FXSsWkI21jDuxzxA)
 
