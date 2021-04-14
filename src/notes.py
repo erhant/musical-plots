@@ -5,10 +5,10 @@ NOTE_SYSTEM_CLASSIC_FLATS = 3
 NOTE_SYSTEM_DEFAULT = NOTE_SYSTEM_ABC_SHARPS
 _NOTE_SYSTEMS = [ \
   #  0     1      2     3      4     5     6      7      8       9     10     11
-  ['C',  'C#',  'D',  'D#',  'E',  'F',  'F#',  'G',   'G#',   'A',  'A#',  'B'],
-  ['DO', 'DO#', 'RE', 'RE#', 'MI', 'FA', 'FA#', 'SOL', 'SOL#', 'LA', 'LA#', 'SI'],
-  ['C',  'Db',  'D',  'Eb',  'E',  'F',  'Gb',  'G',   'Ab',   'A',  'Bb',  'B'],
-  ['DO', 'REb', 'RE', 'MIb', 'MI', 'FA', 'SOLb','SOL', 'LAb',  'LA', 'SIb', 'SI']
+  ['C',  'C#',  'D',  'D#',  'E',  'F',  'F#',  'G',   'G#',   'A',  'A#',  'B'],  # 0: NOTE_SYSTEM_ABC_SHARPS
+  ['DO', 'DO#', 'RE', 'RE#', 'MI', 'FA', 'FA#', 'SOL', 'SOL#', 'LA', 'LA#', 'SI'], # 1: NOTE_SYSTEM_CLASSIC_SHARPS
+  ['C',  'Db',  'D',  'Eb',  'E',  'F',  'Gb',  'G',   'Ab',   'A',  'Bb',  'B'],  # 2: NOTE_SYSTEM_ABC_FLATS
+  ['DO', 'REb', 'RE', 'MIb', 'MI', 'FA', 'SOLb','SOL', 'LAb',  'LA', 'SIb', 'SI']  # 3: NOTE_SYSTEM_CLASSIC_FLATS
 ]                       
 
 DO    = 0
@@ -84,6 +84,9 @@ class Notes:
     return self.notes[self.curIdx]
   
   def read_note(self, note):
+    '''
+    Read a note.
+    '''
     return self.notes[note]
     
   def set_cur(self, note):

@@ -19,6 +19,9 @@ Hexes of Tenths, [G# Minor](https://open.spotify.com/track/6GzMz3s0K1YKwRVI36CgR
 
 Circle of Fifths, [C Major](https://open.spotify.com/track/5rkBnTgLJa6xBuBSZTbuCT?si=Vf7whUFEQLmZLXESsh84QQ) key (with relative [A Minor](https://open.spotify.com/track/0NcSIGbvjOxxbdKCGhKfF3?si=AFJPoOQzT8iGZDeMR7nkMA) key).
 
+
+### Guitar (6-string, standard)
+
 ![2](https://github.com/erhant/hexes-of-tenths/blob/main/img/circle_c.png?raw=true)
 
 Fretboard, [G Minor Pentatonic](https://open.spotify.com/track/3af6czaWDVsWKdMNtVykhX?si=ladZE-FXSsWkI21jDuxzxA)
@@ -29,6 +32,7 @@ Fretboard, [Hendrix Chord](https://open.spotify.com/track/0wJoRiX5K5BxlqZTolB2LD
 
 ![4](https://github.com/erhant/hexes-of-tenths/blob/main/img/fret_hendrix.png?raw=true)
 
+### Keyboard
 
 Piano, [A Flat Major](https://open.spotify.com/track/0SwKt4T6PMsdqU5q6Pv234?si=jqlPWngxT4SdIImAWIBdmw)
 
@@ -38,3 +42,10 @@ Piano, [C Blues](https://open.spotify.com/track/4CZfPaDW5madfScpZl0nDU?si=Edc98Y
 
 ![6](https://github.com/erhant/hexes-of-tenths/blob/main/img/piano_c_blues.png?raw=true)
 
+### Bass (4-string, standard)
+
+![7](https://github.com/erhant/hexes-of-tenths/blob/main/img/bass.png?raw=true)
+
+### Violin
+
+![8](https://github.com/erhant/hexes-of-tenths/blob/main/img/violin.png?raw=true)

@@ -203,11 +203,11 @@ def hexes_of_tenths(halfsteps=None, root=None):
   plt.axis('off')
   plt.show()
 
-def fretboard(fretcount=12, strings=[notes.E, notes.A, notes.D, notes.G, notes.B, notes.E], root=None, halfsteps=None):
+def fretboard(fretcount=12, strings=[notes.E, notes.A, notes.D, notes.G, notes.B, notes.E], root=None, halfsteps=None, title="Fretboard"):
   '''
   The fretboard is constructed in matplotlib.
 
-  You can pass in root and halfsteps for highlighting.
+  You can pass in root and halfsteps for highlighting. For the tuning, use strings kwarg (default to EADGBE).
   '''
   stringcount = len(strings)
   assert(stringcount > 0)
@@ -259,15 +259,15 @@ def fretboard(fretcount=12, strings=[notes.E, notes.A, notes.D, notes.G, notes.B
 
   for i in range(fretcount+1):
     ax.text((f[i, 0, 0] + f[i+1, 0, 0]) / 2, START_Y - 0.5 * F_Y, str(i), c=TEXT_DEFAULT_COLOR, va='center', ha='center', zorder=5) 
-  ax.set_title("Fretboard")
+  ax.set_title(title)
   plt.xlim([START_X-F_X, F_X*(fretcount+2)]) # one +1 for the open fret, other +1 for the boundary
   plt.ylim([START_Y-F_Y, F_Y*(stringcount)])
   plt.axis('off')
   plt.show()
 
-def piano(octaves=2, root=None, halfsteps=None):
+def keyboard(octaves=2, root=None, halfsteps=None, title='Piano'):
   '''
-  Piano keys. Each octave starts with C.
+  Keyboard keys. Each octave starts with C.
   
   '''
   START_X = 0.0
@@ -331,10 +331,22 @@ def piano(octaves=2, root=None, halfsteps=None):
 
   
 if __name__ == "__main__":
+
+  # Shapes
   #hexes_of_tenths(root=notes.Gs, halfsteps=scales.Minor)
   #circle_of_fifths(root=notes.C)
+
+  # Guitar
   #fretboard(root=notes.G, halfsteps=scales.Minor_Pentatonic)
-  fretboard(root=notes.E, halfsteps=chords.Hendrix)
-  #piano(root=notes.Ab, halfsteps=scales.Major)
-  #piano(root=notes.C, halfsteps=scales.Blues)
+  #fretboard(root=notes.E, halfsteps=chords.Hendrix)
+
+  # Piano
+  keyboard(root=notes.Ab, halfsteps=scales.Major)
+  keyboard(root=notes.C, halfsteps=scales.Blues)
+
+  # Bass
+  #fretboard(root=notes.C, halfsteps=scales.Major, strings=[notes.E, notes.A, notes.D, notes.G], title='Bass')
+
+  # Violin
+  #fretboard(root=notes.C, halfsteps=scales.Major, strings=[notes.G, notes.D, notes.A, notes.E], fretcount=7, title='Violin')
   pass

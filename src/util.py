@@ -15,7 +15,7 @@ def halfsteps_to_stepnames(halfsteps):
     elif s == 4:
       stepNames.append('TT') # tone+tone
     else:
-      return "" # this is probably a chord if we see >4
+      return "" # this is ~probably~ a chord if we see >4
   return "("+','.join(stepNames)+")"
 
 def rotate(origin, point, angle_rad):
